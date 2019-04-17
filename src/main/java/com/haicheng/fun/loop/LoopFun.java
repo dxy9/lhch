@@ -1,6 +1,7 @@
 package com.haicheng.fun.loop;
 
 /**
+ * 跳出多层循环
  * @author linhaicheng on 2019/04/13
  */
 public class LoopFun {

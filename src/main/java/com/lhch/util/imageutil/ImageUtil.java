@@ -16,7 +16,42 @@ import java.io.IOException;
  * @Date: 12:01 2019/4/13
  */
 @Slf4j
+@SuppressWarnings("all")
 public class ImageUtil {
+
+    /**
+     * @param imagePath
+     *         下载图片的路径
+     * @param fileTmpPath
+     *         临时目录 以/结尾
+     * @return 返回true是彩色图片 返回false是黑灰图片
+     * @throws Exception
+     */
+    public static Boolean execote(BufferedImage src) {
+
+        int height = src.getHeight();
+        int width = src.getWidth();
+        int[] rgb = new int[4];
+        int o = 0;
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int pixel = src.getRGB(i, j);
+                rgb[1] = (pixel & 0xff0000) >> 16;
+                rgb[2] = (pixel & 0xff00) >> 8;
+                rgb[3] = (pixel & 0xff);
+                //如果像素点不相等的数量超过50个 就判断为彩色图片
+                if (rgb[1] != rgb[2] && rgb[2] != rgb[3] && rgb[3] != rgb[1]) {
+                    o += 1;
+                    if (o >= 50) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
 
     /**
      * 根据图片纵横比对图片进行分类
@@ -40,6 +75,10 @@ public class ImageUtil {
             if (f.isFile()) {
                 BufferedImage image = ImageIO.read(f);
                 if (image == null) {
+                    continue;
+                }
+                if (!execote(image)) {
+                    System.out.println("这不是一张彩照 " + f.getName());
                     continue;
                 }
                 double height = (image.getHeight());
@@ -150,12 +189,7 @@ public class ImageUtil {
     private static void createNewFile(String path) {
         File wOutPathFile = new File(path);
         if (!wOutPathFile.exists()) {
-            try {
-                wOutPathFile.createNewFile();
-            } catch (IOException e) {
-                log.error("创建输出路径异常:{}", e.getMessage());
-                e.printStackTrace();
-            }
+            wOutPathFile.mkdirs();
         }
     }
 }

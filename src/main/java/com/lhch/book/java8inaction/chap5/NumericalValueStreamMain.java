@@ -60,6 +60,7 @@ public class NumericalValueStreamMain {
 
     /**
      * 求最大和求和的区别
+     * 求和可以有一个默认的和0;求最大没有默认值
      */
     private static void fun3(List<Dish> list) {
         //可选的int
@@ -85,7 +86,7 @@ public class NumericalValueStreamMain {
      * 使用数值流的方式计算元素的总和
      */
     private static void fun1() {
-        Dish.menu.stream()
+        int sum = Dish.menu.stream()
                 .mapToInt(Dish::getCalories)
                 .sum();
     }

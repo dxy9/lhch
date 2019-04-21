@@ -261,28 +261,25 @@ public final class Collectors {
     }
 
     /**
-     * Adapts a {@code Collector} accepting elements of type {@code U} to one
-     * accepting elements of type {@code T} by applying a mapping function to
-     * each input element before accumulation.
+     * 通过在累积之前将映射函数应用于每个输入元素，将接收类型U的元素的收集器调整为一个接受类型T的元素。
      *
      * @param <T>
      *         the type of the input elements
      * @param <U>
-     *         type of elements accepted by downstream collector
+     *         type of elements accepted(接受的) by downstream(下游) collector
      * @param <A>
-     *         intermediate accumulation type of the downstream collector
+     *         intermediate(中间) accumulation(收集器) type of the downstream(下游) collector
      * @param <R>
      *         result type of collector
      * @param mapper
-     *         a function to be applied to the input elements
+     *         a function to be applied(应用) to the input elements
      * @param downstream
-     *         a collector which will accept mapped values
+     *         收集映射值的收集器
      * @return a collector which applies the mapping function to the input
      * elements and provides the mapped results to the downstream collector
-     * @apiNote The {@code mapping()} collectors are most useful when used in a
-     * multi-level reduction, such as downstream of a {@code groupingBy} or
-     * {@code partitioningBy}.  For example, given a stream of
-     * {@code Person}, to accumulate the set of last names in each city:
+     * @apiNote 当使用多级归约的时候mapping收集器是最有用的, such as groupingBy或者partitioningBy的下游,
+     *          给定一个Person流，以累积每个城市的姓氏集：例如
+     *
      * <pre>{@code
      *     Map<City, Set<String>> lastNamesByCity
      *         = people.stream().collect(groupingBy(Person::getCity,
@@ -300,9 +297,8 @@ public final class Collectors {
     }
 
     /**
-     * Adapts a {@code Collector} to perform an additional finishing
-     * transformation.  For example, one could adapt the {@link #toList()}
-     * collector to always produce an immutable list with:
+     * 调整收集器以执行其他完成转换。例如，可以调整toList（）收集器以始终生成一个不可变列表：
+     *
      * <pre>{@code
      *     List<String> people
      *         = people.stream().collect(collectingAndThen(toList(), Collections::unmodifiableList));
@@ -311,17 +307,16 @@ public final class Collectors {
      * @param <T>
      *         the type of the input elements
      * @param <A>
-     *         intermediate accumulation type of the downstream collector
+     *         intermediate(中间) accumulation type of the downstream collector
      * @param <R>
-     *         result type of the downstream collector
+     *         下游收集器的结果类型
      * @param <RR>
-     *         result type of the resulting collector
+     *         结果收集器的结果类型
      * @param downstream
      *         a collector
      * @param finisher
      *         a function to be applied to the final result of the downstream collector
-     * @return a collector which performs the action of the downstream collector,
-     * followed by an additional finishing step
+     * @return 一个收集器，它执行下游收集器的动作，然后对下游收集器的最终结果进行处理转换(是对结果类型的转换不是对参数T的转换)
      */
     public static <T, A, R, RR> Collector<T, A, RR> collectingAndThen(Collector<T, A, R> downstream,
                                                                       Function<R, RR> finisher) {
@@ -816,21 +811,17 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} implementing a cascaded "group by" operation
-     * on input elements of type {@code T}, grouping elements according to a
-     * classification function, and then performing a reduction operation on
-     * the values associated with a given key using the specified downstream
-     * {@code Collector}.
+     * 返回一个收集器，对T类型的输入元素执行级联“group by”操作，根据分类函数对元素进行分组，
+     * 然后使用指定的下游收集器对与给定键关联的值执行缩减操作。
      *
-     * <p>The classification function maps elements to some key type {@code K}.
-     * The downstream collector operates on elements of type {@code T} and
-     * produces a result of type {@code D}. The resulting collector produces a
-     * {@code Map<K, D>}.
+     * 分类函数将元素映射到某个键类型K.下游收集器对类型为T的元素进行操作并生成类型D的结果。
      *
-     * <p>There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code Map} returned.
+     * 生成的收集器生成Map <K，D>。
      *
-     * <p>For example, to compute the set of last names of people in each city:
+     * 无法保证返回的Map的类型，可变性，可序列性或线程安全性。
+     *
+     * 例如，要计算每个城市中人员的姓氏集：
+     *
      * <pre>{@code
      *     Map<City, Set<String>> namesByCity
      *         = people.stream().collect(groupingBy(Person::getCity,
@@ -842,20 +833,22 @@ public final class Collectors {
      * @param <K>
      *         the type of the keys
      * @param <A>
-     *         the intermediate accumulation type of the downstream collector
+     *         the intermediate(中间) accumulation type of the downstream collector
      * @param <D>
-     *         the result type of the downstream reduction
-     * @param classifier
-     *         a classifier function mapping input elements to keys
+     *         下游归约的结果类型
+     * @param classifier(分类器)
+     *         分类器函数将输入元素映射到键
      * @param downstream
-     *         a {@code Collector} implementing the downstream reduction
-     * @return a {@code Collector} implementing the cascaded group-by operation
-     * @implNote The returned {@code Collector} is not concurrent.  For parallel stream
-     * pipelines, the {@code combiner} function operates by merging the keys
-     * from one map into another, which can be an expensive operation.  If
-     * preservation of the order in which elements are presented to the downstream
-     * collector is not required, using {@link #groupingByConcurrent(Function, Collector)}
-     * may offer better parallel performance.
+     *         实现下游归约的收集器
+     * @return 实现级联分组操作的收集器
+     * @implNote
+     *
+     * 返回的收集器不是并发的。
+     *
+     * 对于并行流管道，组合器功能通过将键从一个映射合并到另一个映射来操作，这可能是昂贵的操作。
+     *
+     * 如果不需要保留向下游收集器呈现元素的顺序，则使用groupingByConcurrent（Function，Collector）可以提供更好的并行性能。
+     *
      * @see #groupingBy(Function)
      * @see #groupingBy(Function, Supplier, Collector)
      * @see #groupingByConcurrent(Function, Collector)

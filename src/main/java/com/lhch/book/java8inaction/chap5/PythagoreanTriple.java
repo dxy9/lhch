@@ -66,6 +66,7 @@ public class PythagoreanTriple {
                 );
         stream.forEach(a -> System.out.println(a[0] + " " + a[1] + " " + a[2]));
 
+        // if don't use flatMap
         Stream<Stream<int[]>> streamStream = IntStream.rangeClosed(1, 100)
                 .boxed()
                 .map(a ->

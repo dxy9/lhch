@@ -85,6 +85,7 @@ public class PartitionMain {
         Map<Boolean, Dish> collect2 = dishes.stream()
                 .collect(partitioningBy(Dish::isVegetarian,
                         collectingAndThen(
+                                /*maxBy返回Optional对象*/
                                 maxBy(comparing(Dish::getCalories)),
                                 Optional::get)));
         log.info("collection2:{}", collect2);

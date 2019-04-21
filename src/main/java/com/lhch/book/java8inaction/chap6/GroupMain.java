@@ -44,6 +44,21 @@ public class GroupMain {
                         )/*,toSet()不是放到这里的
                          toSet()*/));
         System.out.println(collect);
+        //FIXME 能否用其他的方式实现
+        // TODO mapping和collectingAndThen的区别
+        //      mapping是对参数的映射处理
+        //      collectingAndThen是对归约结果类型的转换
+        //Map<Dish.Type, Set<level>> collect1 = dishes.stream()
+        //        .collect(groupingBy(a -> a.getType(),
+        //                collectingAndThen(
+        //                        a -> {
+        //                            if (a.getCalories() <= 400) return level.LOWER;
+        //                            else if (a.getCalories() <= 700) return level.NORMAL;
+        //                            else return level.HIGHT;
+        //                        }
+        //                        , toSet()
+        //                )));
+        System.out.println(collect);
     }
 
     /**
@@ -69,11 +84,13 @@ public class GroupMain {
 
     /**
      * 把收集器转换成另外一个类型
-     * 求类型中卡路里最后的菜
+     * 求类型中卡路里最高的菜
      */
     private static void fun5(List<Dish> dishes) {
         Map<Dish.Type, Dish> collect = dishes.stream()
                 .collect(Collectors.groupingBy(Dish::getType,
+                        /*还是不太理解这个方法 collectingAndThen TODO*/
+                        /*接收和返回的都是Collector类型*/
                         collectingAndThen(maxBy(Comparator.comparingInt(Dish::getCalories)),
                                 Optional::get
                         )));
@@ -109,7 +126,9 @@ public class GroupMain {
     private static void fun3(List<Dish> dishes) {
         Map<Dish.Type, Map<level, List<Dish>>> collect = dishes.stream()
                 .collect(Collectors.groupingBy(Dish::getType,
+                        /*这个参数是Collectors.groupingBy()方法的参数*/
                         Collectors.groupingBy(a -> {
+                            /*正确的lamda格式才能让a取到自身的属性*/
                             if (a.getCalories() > 600) {
                                 return level.HIGHT;
                             }
@@ -122,6 +141,11 @@ public class GroupMain {
 
     }
 
+    /**
+     * 按照卡路里热量进行分组
+     *
+     * @param dis
+     */
     private static void fun2(List<Dish> dis) {
         Map<level, List<Dish>> collect = dis.stream()
                 .collect(Collectors.groupingBy(a -> {

@@ -24,6 +24,11 @@ public class AdvanceReduce {
                 .reduce("", (a, b) -> a + "," + b);
         System.out.println(string);
 
+        String collect = dishes.stream()
+                .map(Dish::getName)
+                .collect(Collectors.joining/*加入*/(","));
+        System.out.println("joining:" + collect);
+
     }
 
     /**

@@ -127,8 +127,8 @@ public class Execrcise5 {
         System.out.println("ArrayList二次封装:" + resultList.toString());
 
         //使用Collections.addAll
-        List<String> resultList2 = new ArrayList<>(array.length);
-        Collections.addAll(resultList2, array);
+        List<String> targetList = new ArrayList<>(array.length);
+        Collections.addAll(targetList, array);
 
         //java9之后提供的方法,跟Arrays.toList是一样的效果
         //List<String> list=List.of(array);

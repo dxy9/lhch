@@ -32,26 +32,22 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 /**
- * Implementations of {@link Collector} that implement various useful reduction
- * operations, such as accumulating elements into collections, summarizing
- * elements according to various criteria, etc.
- *
- * <p>The following are examples of using the predefined collectors to perform
- * common mutable reduction tasks:
+ * 实现各种有用的约简操作的收集器的实现，例如将元素累积到集合中，根据各种标准汇总元素等。
+ * 以下是使用预定义收集器执行常见的可变约简任务的示例：
  *
  * <pre>{@code
- *     // Accumulate names into a List
+ *     // 将名称累积到列表中
  *     List<String> list = people.stream().map(Person::getName).collect(Collectors.toList());
  *
  *     // Accumulate names into a TreeSet
  *     Set<String> set = people.stream().map(Person::getName).collect(Collectors.toCollection(TreeSet::new));
  *
- *     // Convert elements to strings and concatenate them, separated by commas
+ *     // Convert elements to strings and concatenate(串联) them, separated by commas(逗号)
  *     String joined = things.stream()
  *                           .map(Object::toString)
  *                           .collect(Collectors.joining(", "));
  *
- *     // Compute sum of salaries of employee
+ *     // Compute(计算) sum of salaries(工资) of employee
  *     int total = employees.stream()
  *                          .collect(Collectors.summingInt(Employee::getSalary)));
  *
@@ -66,7 +62,7 @@ import java.util.stream.Stream;
  *                    .collect(Collectors.groupingBy(Employee::getDepartment,
  *                                                   Collectors.summingInt(Employee::getSalary)));
  *
- *     // Partition students into passing and failing
+ *     // Partition students into passing(通过) and failing(未通过)
  *     Map<Boolean, List<Student>> passingFailing =
  *         students.stream()
  *                 .collect(Collectors.partitioningBy(s -> s.getGrade() >= PASS_THRESHOLD));
@@ -78,11 +74,11 @@ import java.util.stream.Stream;
 public final class Collectors {
 
     static final Set<Collector.Characteristics> CH_CONCURRENT_ID
-            = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
+            = Collections.unmodifiableSet/*不可修改的集合*/(EnumSet.of(Collector.Characteristics.CONCURRENT,
             Collector.Characteristics.UNORDERED,
             Collector.Characteristics.IDENTITY_FINISH));
     static final Set<Collector.Characteristics> CH_CONCURRENT_NOID
-            = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
+            = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics/*特征*/.CONCURRENT,
             Collector.Characteristics.UNORDERED));
     static final Set<Collector.Characteristics> CH_ID
             = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
@@ -95,11 +91,8 @@ public final class Collectors {
     }
 
     /**
-     * Returns a merge function, suitable for use in
-     * {@link Map#merge(Object, Object, BiFunction) Map.merge()} or
-     * {@link #toMap(Function, Function, BinaryOperator) toMap()}, which always
-     * throws {@code IllegalStateException}.  This can be used to enforce the
-     * assumption that the elements being collected are distinct.
+     * 返回一个合并函数，适用于Map.merge（）或toMap（），它总是抛出IllegalStateException。
+     * 这可以用于强制假设所收集的元素是不同的
      *
      * @param <T>
      *         the type of input arguments to the merge function
@@ -142,24 +135,24 @@ public final class Collectors {
     }
 
     /**
-     * Returns a {@code Collector} that accumulates the input elements into a
-     * new {@code List}. There are no guarantees on the type, mutability,
-     * serializability, or thread-safety of the {@code List} returned; if more
-     * control over the returned {@code List} is required, use {@link #toCollection(Supplier)}.
-     *
+     * 返回将输入元素累积到新List中的Collector。
+     * 返回的List的类型，可变性，可序列化或线程安全性无法保证;
+     * 如果需要更多地控制返回的List，请使用toCollection（Supplier）。
      * @param <T>
      *         the type of the input elements
-     * @return a {@code Collector} which collects all the input elements into a
-     * {@code List}, in encounter order
+     * @return 收集器，按照顺序将所有输入元素收集到List中
      */
     public static <T>
     Collector<T, ?, List<T>> toList() {
-        return new CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,
+        return new CollectorImpl<>(
+                (Supplier<List<T>>) ArrayList::new,
+                List::add,
                 (left, right) -> {
                     left.addAll(right);
                     return left;
                 },
-                CH_ID);
+                CH_ID
+        );
     }
 
     /**
@@ -1611,6 +1604,9 @@ public final class Collectors {
      *         the type of the result
      */
     static class CollectorImpl<T, A, R> implements Collector<T, A, R> {
+        /*
+        不可变的对象
+         */
         private final Supplier<A> supplier;
         private final BiConsumer<A, T> accumulator;
         private final BinaryOperator<A> combiner;
@@ -1638,6 +1634,7 @@ public final class Collectors {
 
         @Override
         public BiConsumer<A, T> accumulator() {
+            /*返回不可变的对实例*/
             return accumulator;
         }
 

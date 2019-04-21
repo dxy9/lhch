@@ -1,7 +1,5 @@
 package com.lhch.book.java8inaction.chap6;
 
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -9,7 +7,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/* TODO 太抽象了,无法理解这个接口
+/** TODO 太抽象了,无法理解这个接口
 可变缩减操作，将输入元素累积到可变结果容器中，可选地在处理完所有输入元素后将累积结果转换为最终表示。还原操作可以顺序执行或并行执行。
 
     可变缩减操作的示例包括：
@@ -93,26 +91,21 @@ Type parameters:
  */
 public interface Collector<T, A, R> {
     /**
-     * Returns a new {@code Collector} described by the given {@code supplier},
-     * {@code accumulator}, and {@code combiner} functions.  The resulting
-     * {@code Collector} has the {@code Collector.Characteristics.IDENTITY_FINISH}
-     * characteristic.
+     * 返回给定供应商，累加器和组合器函数描述的新收集器。生成的收集器具有Collector.Characteristics.IDENTITY_FINISH特征
      *
      * @param supplier
-     *         The supplier function for the new collector
+     *         新收集器的供应商功能
      * @param accumulator
-     *         The accumulator function for the new collector
+     *         新收集器的累加器功能
      * @param combiner
-     *         The combiner function for the new collector
+     *         新收集器的组合器功能
      * @param characteristics
-     *         The collector characteristics for the new
-     *         collector
+     *         新收集器的收集器特性
      * @param <T>
-     *         The type of input elements for the new collector
+     *         新收集器的输入元素类型
      * @param <R>
-     *         The type of intermediate accumulation result, and final result,
-     *         for the new collector
-     * @return the new {@code Collector}
+     *         中间累积结果的类型，以及新收集器的最终结果
+     * @return the new Collector
      * @throws NullPointerException
      *         if any argument is null
      */
@@ -124,35 +117,32 @@ public interface Collector<T, A, R> {
         Objects.requireNonNull(accumulator);
         Objects.requireNonNull(combiner);
         Objects.requireNonNull(characteristics);
-        Set<Characteristics> cs = (characteristics.length == 0)
-                ? Collectors.CH_ID
-                : Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH,
-                characteristics));
-        return new Collectors.CollectorImpl<>(supplier, accumulator, combiner, cs);
+        //Set<Characteristics> cs = (characteristics.length == 0)
+        //        ? Collectors.CH_ID
+        //        : Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH,
+        //        characteristics));
+        //return new Collectors.CollectorImpl<>(supplier, accumulator, combiner, cs);
+        return null;
     }
 
     /**
-     * Returns a new {@code Collector} described by the given {@code supplier},
-     * {@code accumulator}, {@code combiner}, and {@code finisher} functions.
+     * 返回给定供应商，累加器和组合器函数描述的新收集器。生成的收集器具有Collector.Characteristics.IDENTITY_FINISH特征
      *
      * @param supplier
-     *         The supplier function for the new collector
+     *         新收集器的供应商功能
      * @param accumulator
-     *         The accumulator function for the new collector
+     *         新收集器的累加器功能
      * @param combiner
-     *         The combiner function for the new collector
-     * @param finisher
-     *         The finisher function for the new collector
+     *         新收集器的组合器功能
      * @param characteristics
-     *         The collector characteristics for the new
-     *         collector
+     *         新收集器的收集器特性
+     * @param finisher
+     *         新收集器的整理器特性
      * @param <T>
-     *         The type of input elements for the new collector
-     * @param <A>
-     *         The intermediate accumulation type of the new collector
+     *         新收集器的输入元素类型
      * @param <R>
-     *         The final result type of the new collector
-     * @return the new {@code Collector}
+     *         中间累积结果的类型，以及新收集器的最终结果
+     * @return the new Collector
      * @throws NullPointerException
      *         if any argument is null
      */
@@ -166,13 +156,14 @@ public interface Collector<T, A, R> {
         Objects.requireNonNull(combiner);
         Objects.requireNonNull(finisher);
         Objects.requireNonNull(characteristics);
-        Set<Characteristics> cs = Collectors.CH_NOID;
-        if (characteristics.length > 0) {
-            cs = EnumSet.noneOf(Characteristics.class);
-            Collections.addAll(cs, characteristics);
-            cs = Collections.unmodifiableSet(cs);
-        }
-        return new Collectors.CollectorImpl<>(supplier, accumulator, combiner, finisher, cs);
+        //Set<Characteristics> cs = Collectors.CH_NOID;
+        //if (characteristics.length > 0) {
+        //    cs = EnumSet.noneOf(Characteristics.class);
+        //    Collections.addAll(cs, characteristics);
+        //    cs = Collections.unmodifiableSet(cs);
+        //}
+        //return new Collectors.CollectorImpl<>(supplier, accumulator, combiner, finisher, cs);
+        return null;
     }
 
     /**
@@ -183,71 +174,54 @@ public interface Collector<T, A, R> {
     Supplier<A> supplier();
 
     /**
-     * A function that folds a value into a mutable result container.
+     * 将值折叠到可变结果容器中的函数。
      *
      * @return a function which folds a value into a mutable result container
      */
     BiConsumer<A, T> accumulator();
 
     /**
-     * A function that accepts two partial results and merges them.  The
-     * combiner function may fold state from one argument into the other and
-     * return that, or may return a new result container.
+     * 一个接受两个部分结果并合并它们的函数。
+     * 组合器函数可以将状态从一个参数折叠到另一个参数中并且
+     * 返回该参数，或者可以返回新的结果容器。
      *
-     * @return a function which combines two partial results into a combined
-     * result
+     * @return 将两个部分结果组合成组合结果的函数
      */
     BinaryOperator<A> combiner();
 
     /**
-     * Perform the final transformation from the intermediate accumulation type
-     * {@code A} to the final result type {@code R}.
+     * 执行从中间累积类型A到最终结果类型R的最终转换。
+     * 如果设置了特征IDENTITY_TRANSFORM，则可以假定此函数是具有从A到R的未经检查的强制转换的标识变换
      *
-     * <p>If the characteristic {@code IDENTITY_TRANSFORM} is
-     * set, this function may be presumed to be an identity transform with an
-     * unchecked cast from {@code A} to {@code R}.
-     *
-     * @return a function which transforms the intermediate result to the final
-     * result
+     * @return 将中间结果转换为最终结果的函数
      */
     Function<A, R> finisher();
 
     /**
-     * Returns a {@code Set} of {@code Collector.Characteristics} indicating
-     * the characteristics of this Collector.  This set should be immutable.
+     * 返回一组Collector.Characteristics，指示此收集器的特征。这个集合应该是不可变的。
      *
      * @return an immutable set of collector characteristics
      */
     Set<Characteristics> characteristics();
 
     /**
-     * Characteristics indicating properties of a {@code Collector}, which can
-     * be used to optimize reduction implementations.
+     * 指示收集器属性的特征，可用于优化归约实现。
      */
     enum Characteristics {
         /**
-         * Indicates that this collector is <em>concurrent</em>, meaning that
-         * the result container can support the accumulator function being
-         * called concurrently with the same result container from multiple
-         * threads.
-         *
-         * <p>If a {@code CONCURRENT} collector is not also {@code UNORDERED},
-         * then it should only be evaluated concurrently if applied to an
-         * unordered data source.
+         * 表示此收集器是并发的，这意味着结果容器可以支持从多个线程使用相同结果容器并发调用累加器函数。
+         * 如果CONCURRENT收集器也不是UNORDERED，那么只有在应用于无序数据源时才应同时评估它。
          */
         CONCURRENT,
 
         /**
-         * Indicates that the collection operation does not commit to preserving
-         * the encounter order of input elements.  (This might be true if the
-         * result container has no intrinsic order, such as a {@link Set}.)
+         * 表示集合操作不承诺保留输入元素的遭遇顺序。 （如果结果容器没有内在顺序，例如Set，则可能是这样。）
          */
         UNORDERED,
 
         /**
-         * Indicates that the finisher function is the identity function and
-         * can be elided.  If set, it must be the case that an unchecked cast
-         * from A to R will succeed.
+         * 表示整理器功能是标识功能，可以省略。
+         * 如果设置，则必须是从A到R的未经检查的强制转换成功的情况。
          */
         IDENTITY_FINISH
     }
